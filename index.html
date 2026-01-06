@@ -6,22 +6,29 @@
     <title>Nossa Conexão</title>
     <style>
         :root { --cor-p1: #ffffff; --cor-p2: #ff4d6d; }
+        
         html, body { 
             margin: 0; padding: 0; overflow: hidden; position: fixed; 
             width: 100%; height: 100%; touch-action: none;
             background: radial-gradient(circle at center, #1b2735 0%, #090a0f 100%);
             font-family: 'optima', 'Georgia', serif; color: white;
         }
+
         #universo { width: 100vw; height: 100vh; position: relative; overflow: hidden; }
 
-        /* Estrelas de Fundo e Cadentes */
+        /* Estrelas e Cadentes */
         .bg-star { position: absolute; background: white; border-radius: 50%; opacity: 0.3; animation: twinkle var(--d) infinite; }
         @keyframes twinkle { 0%, 100% { opacity: 0.3; } 50% { opacity: 0.8; } }
+        
         .cadente {
             position: absolute; width: 2px; height: 2px; background: white;
             box-shadow: 0 0 10px white; border-radius: 50%; animation: meteor 4s linear;
         }
-        @keyframes meteor { 0% { transform: rotate(-35deg) translateX(0); opacity: 0; } 10% { opacity: 1; } 30% { transform: rotate(-35deg) translateX(-1000px); opacity: 0; } }
+        @keyframes meteor { 
+            0% { transform: rotate(-35deg) translateX(0); opacity: 0; } 
+            10% { opacity: 1; } 
+            30% { transform: rotate(-35deg) translateX(-1000px); opacity: 0; } 
+        }
 
         /* Jogadores */
         .estrela { 
@@ -33,26 +40,41 @@
 
         /* Linha de Conexão */
         #conexao-svg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 998; }
-        #linha { stroke: white; stroke-width: 2; stroke-dasharray: 5; opacity: 0; transition: opacity 0.5s; }
+        #linha { stroke: white; stroke-width: 1.5; stroke-dasharray: 8; opacity: 0; }
 
-        /* Interface e Texto */
+        /* TEXTO ESTILO CARTA DOS CÉUS */
         #texto-container { 
-            position: absolute; top: 45%; left: 50%; transform: translate(-50%, -50%);
-            width: 85%; max-width: 650px; text-align: center; opacity: 0; transition: 2s; pointer-events: none;
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            width: 80%; max-width: 500px; text-align: center; 
+            opacity: 0; /* Controlado pelo JS */
+            transition: opacity 1s ease; pointer-events: none;
+            padding: 30px;
+            background: radial-gradient(circle, rgba(255,255,255,0.05) 0%, transparent 80%);
+            border-radius: 50%;
         }
-        .narrativa { font-size: 1.3rem; line-height: 1.6; font-style: italic; }
+        .narrativa { 
+            font-size: 1.4rem; 
+            line-height: 1.8; 
+            font-style: italic;
+            letter-spacing: 1px;
+            text-shadow: 0 0 10px rgba(255,255,255,0.5), 0 0 20px rgba(255,255,255,0.2);
+            color: #f0f0f0;
+        }
 
+        /* BARRA COM DESTAQUE */
         #barra-sincronia { 
-            position: fixed; bottom: 0; left: 0; width: 100%; height: 20px; 
-            background: rgba(0,0,0,0.5); overflow: hidden; z-index: 1000;
+            position: fixed; bottom: 0; left: 0; width: 100%; height: 16px; 
+            background: rgba(0,0,0,0.6); overflow: hidden; z-index: 1000;
         }
         #progresso { 
-            width: 0%; height: 100%; background: linear-gradient(90deg, var(--cor-p1), var(--cor-p2)); 
-            box-shadow: 0 0 30px var(--cor-p2); transition: width 0.3s;
+            width: 0%; height: 100%; 
+            background: linear-gradient(90deg, var(--cor-p1), var(--cor-p2)); 
+            box-shadow: 0 0 20px var(--cor-p2);
+            transition: width 0.3s linear;
         }
         
         .interface { position: fixed; top: 40px; width: 100%; text-align: center; z-index: 20; }
-        #dica-dinamica { font-size: 0.9rem; font-style: italic; opacity: 0.8; }
+        #dica-dinamica { font-size: 0.8rem; font-style: italic; opacity: 0.6; letter-spacing: 2px; text-transform: uppercase; }
     </style>
 </head>
 <body>
@@ -60,14 +82,15 @@
 <div id="universo">
     <svg id="conexao-svg"><line id="linha" x1="0" y1="0" x2="0" y2="0" /></svg>
     <div class="interface"><div id="dica-dinamica">Sinta o rastro dele(a)...</div></div>
+    
     <div id="texto-container">
         <p class="narrativa">
             "Excepcional é pouco para te descrever.<br><br>
-            Você não habita apenas minha mente, você percorre todo o meu corpo como uma sensação doce e familiar.<br>
-            Ver o brilho dos seus olhos é o que faz minha alma inteira sorrir e se sentir viva." <br>
-            Larissa, você é rara!
+            Você não habita apenas minha mente, você percorre todo o meu corpo como uma sensação doce e familiar.<br><br>
+            Ver o brilho dos seus olhos alegra não só o meu olhar, mas ilumina a minha alma por completo."
         </p>
     </div>
+
     <div id="eu" class="estrela"></div>
     <div id="parceiro" class="estrela"></div>
     <div id="barra-sincronia"><div id="progresso"></div></div>
@@ -101,11 +124,11 @@
     let otherPos = { x: -1000, y: -1000 };
     let sincronia = 0;
 
-    // Se ela for P2, a estrela P1 (você) fica invisível para ela
-    if (p === '2') document.getElementById('parceiro').style.display = 'none';
+    // Se ela for P2, o P1 (você) começa invisível
+    if (p === '2') document.getElementById('parceiro').style.opacity = '0';
 
-    // Gerar estrelas
-    for (let i = 0; i < 60; i++) {
+    // Gerar fundo estelar
+    for (let i = 0; i < 65; i++) {
         const s = document.createElement('div');
         s.className = 'bg-star';
         s.style.width = s.style.height = Math.random() * 2 + 'px';
@@ -114,6 +137,16 @@
         s.style.setProperty('--d', Math.random() * 3 + 2 + 's');
         document.getElementById('universo').appendChild(s);
     }
+
+    // Criar Cadentes aleatórias
+    setInterval(() => {
+        const c = document.createElement('div');
+        c.className = 'cadente';
+        c.style.left = Math.random() * 100 + 'vw';
+        c.style.top = Math.random() * 40 + 'vh';
+        document.getElementById('universo').appendChild(c);
+        setTimeout(() => c.remove(), 4000);
+    }, 3000);
 
     const move = (e) => {
         const x = e.clientX || (e.touches ? e.touches[0].clientX : 0);
@@ -130,40 +163,46 @@
 
     onValue(otherRef, (snapshot) => {
         otherPos = snapshot.val() || { x: -1000, y: -1000 };
-        const pVis = document.getElementById('parceiro');
-        pVis.style.left = otherPos.x + 'px';
-        pVis.style.top = otherPos.y + 'px';
+        document.getElementById('parceiro').style.left = otherPos.x + 'px';
+        document.getElementById('parceiro').style.top = otherPos.y + 'px';
         verificarSincronia();
     });
 
     function verificarSincronia() {
-        // Compensação visual para o cálculo de distância (já que a estrela está deslocada para cima)
         const dist = Math.sqrt(Math.pow(myPos.x - otherPos.x, 2) + Math.pow(myPos.y - otherPos.y, 2));
         const barra = document.getElementById('progresso');
         const dica = document.getElementById('dica-dinamica');
         const linha = document.getElementById('linha');
+        const texto = document.getElementById('texto-container');
 
-        if (dist < 150) { 
+        // Lógica de Sincronia
+        if (dist < 120 && otherPos.x > 0) { 
             sincronia += 0.8;
-            linha.style.opacity = (150 - dist) / 100;
-            linha.setAttribute('x1', myPos.x); linha.setAttribute('y1', myPos.y - 70);
-            linha.setAttribute('x2', otherPos.x); linha.setAttribute('y2', otherPos.y - 70);
-            if (p === '2') dica.innerText = "Você está sentindo algo...";
+            linha.style.opacity = (120 - dist) / 100;
+            linha.setAttribute('x1', myPos.x); linha.setAttribute('y1', myPos.y - 80);
+            linha.setAttribute('x2', otherPos.x); linha.setAttribute('y2', otherPos.y - 80);
+            if (p === '2') dica.innerText = "Sua alma está sentindo...";
         } else {
-            sincronia -= 0.4;
+            sincronia -= 0.5;
             linha.style.opacity = 0;
-            if (p === '2') dica.innerText = "Ele está por aqui... procure.";
+            if (p === '2') dica.innerText = "Ele está em algum lugar...";
         }
 
         sincronia = Math.max(0, Math.min(100, sincronia));
         barra.style.width = sincronia + '%';
         
-        if (sincronia >= 100) {
-            document.getElementById('texto-container').style.opacity = '1';
-            dica.style.opacity = '0';
-            // Revela a estrela no final para o encontro
-            document.getElementById('parceiro').style.display = 'block';
-            document.getElementById('parceiro').style.opacity = '1';
+        // CONTROLE DO TEXTO (Sumiço Gradual)
+        if (sincronia >= 15) {
+            // O texto começa a aparecer aos 15% e fica totalmente visível aos 100%
+            texto.style.opacity = (sincronia - 15) / 85; 
+        } else {
+            texto.style.opacity = '0';
+        }
+
+        // Revelação da estrela no final para o P2
+        if (p === '2') {
+            if (sincronia > 90) document.getElementById('parceiro').style.opacity = '1';
+            else document.getElementById('parceiro').style.opacity = '0';
         }
     }
 </script>
