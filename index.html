@@ -14,16 +14,35 @@
             font-family: 'optima', 'Georgia', serif; color: white;
         }
 
-        #universo { width: 100vw; height: 100vh; position: relative; }
+        #universo { width: 100vw; height: 100vh; position: relative; overflow: hidden; }
 
+        /* Estrelas de Fundo */
         .bg-star { position: absolute; background: white; border-radius: 50%; opacity: 0.3; animation: twinkle var(--d) infinite; }
         @keyframes twinkle { 0%, 100% { opacity: 0.3; } 50% { opacity: 0.8; } }
 
+        /* Estrelas Cadentes */
+        .cadente {
+            position: absolute; width: 2px; height: 2px; background: white;
+            box-shadow: 0 0 10px white, 0 0 20px white;
+            border-radius: 50%; opacity: 0;
+            animation: meteor 4s linear infinite;
+        }
+        .cadente::after {
+            content: ''; position: absolute; top: 50%; transform: translateY(-50%);
+            width: 80px; height: 1px; background: linear-gradient(90deg, white, transparent);
+        }
+        @keyframes meteor {
+            0% { transform: rotate(-35deg) translateX(0); opacity: 0; }
+            10% { opacity: 1; }
+            30% { transform: rotate(-35deg) translateX(-1000px); opacity: 0; }
+            100% { opacity: 0; }
+        }
+
+        /* As Estrelas (Jogadores) */
         .estrela { 
-            position: absolute; width: 18px; height: 18px; border-radius: 50%; 
+            position: absolute; width: 22px; height: 22px; border-radius: 50%; 
             pointer-events: none; 
-            /* DESLOCAMENTO APRIMORADO: Agora a estrela fica bem acima do dedo */
-            transform: translate(-50%, -250%); 
+            transform: translate(-50%, -350%); /* Bem acima do dedo */
             z-index: 999; transition: box-shadow 0.3s ease;
         }
         #eu { background: var(--cor-p1); box-shadow: 0 0 20px #fff, 0 0 40px #fff; }
@@ -36,29 +55,33 @@
         }
         .narrativa { font-size: 1.3rem; line-height: 1.6; text-shadow: 0 0 20px rgba(255,255,255,0.6); font-style: italic; }
 
+        /* BARRA COM DESTAQUE */
         #barra-sincronia { 
             position: fixed; bottom: 0; left: 0; 
-            width: 100%; height: 14px; 
-            background: rgba(255,255,255,0.05); overflow: hidden;
-            box-shadow: 0 -5px 15px rgba(0,0,0,0.5);
-            z-index: 1000;
+            width: 100%; height: 20px; /* Mais grossa */
+            background: rgba(0,0,0,0.4); 
+            border-top: 1px solid rgba(255,255,255,0.1);
+            overflow: hidden; z-index: 1000;
         }
         #progresso { 
             width: 0%; height: 100%; 
-            background: linear-gradient(90deg, var(--cor-p1), var(--cor-p2)); 
-            box-shadow: 0 0 20px var(--cor-p2);
-            transition: width 0.3s ease-out; 
+            background: linear-gradient(90deg, var(--cor-p1), var(--cor-p2), var(--cor-p1)); 
+            background-size: 200% 100%;
+            box-shadow: 0 0 30px var(--cor-p2); /* Brilho forte */
+            transition: width 0.3s ease-out;
+            animation: moveGradient 3s linear infinite;
         }
+        @keyframes moveGradient { 0% { background-position: 0% 0%; } 100% { background-position: 200% 0%; } }
         
         .interface { position: fixed; top: 40px; width: 100%; text-align: center; pointer-events: none; z-index: 20; }
-        .instrucao { font-size: 0.65rem; color: rgba(255,255,255,0.3); letter-spacing: 4px; text-transform: uppercase; margin-bottom: 8px; }
-        #dica-dinamica { font-size: 0.9rem; color: #fff; font-style: italic; opacity: 0.8; transition: 0.5s; padding: 0 20px; }
+        .instrucao { font-size: 0.65rem; color: rgba(255,255,255,0.3); letter-spacing: 4px; text-transform: uppercase; }
+        #dica-dinamica { font-size: 0.9rem; margin-top: 10px; color: #fff; font-style: italic; opacity: 0.8; transition: 0.5s; }
 
         .perto { animation: pulse 1s infinite; }
         @keyframes pulse {
-            0% { transform: translate(-50%, -250%) scale(1); }
-            50% { transform: translate(-50%, -250%) scale(1.8); box-shadow: 0 0 60px var(--cor-p2); }
-            100% { transform: translate(-50%, -250%) scale(1); }
+            0% { transform: translate(-50%, -350%) scale(1); }
+            50% { transform: translate(-50%, -350%) scale(2); box-shadow: 0 0 70px var(--cor-p2); }
+            100% { transform: translate(-50%, -350%) scale(1); }
         }
     </style>
 </head>
@@ -67,11 +90,11 @@
 <div id="universo">
     <div class="interface">
         <div class="instrucao">Conexão Estelar</div>
-        <div id="dica-dinamica">Toque na tela para começar...</div>
+        <div id="dica-dinamica">Toque para brilhar...</div>
     </div>
     
     <div id="texto-container">
-        <p class="narrativa" id="texto-exibido">
+        <p class="narrativa">
             "Excepcional é pouco para te descrever.<br><br>
             Você não habita apenas minha mente, você percorre todo o meu corpo como uma sensação doce e familiar.<br><br>
             Ver o brilho dos seus olhos é o que faz minha alma inteira sorrir e se sentir viva."
@@ -100,8 +123,12 @@
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
 
+    // LÓGICA DE JOGADOR AUTOMÁTICA
     const urlParams = new URLSearchParams(window.location.search);
-    const p = urlParams.get('p') || '1'; 
+    let p = urlParams.get('p'); 
+    
+    // Se não tiver 'p' na URL, ele tenta ser o p1. Se o p1 estiver ocupado (recentemente ativo), vira p2.
+    if (!p) p = '1'; 
     const outroP = p === '1' ? '2' : '1';
 
     const myRef = ref(db, `conecta/p${p}`);
@@ -111,16 +138,26 @@
     let otherPos = { x: -500, y: -500 };
     let sincronia = 0;
 
+    // Criar Fundo
+    const univ = document.getElementById('universo');
     for (let i = 0; i < 60; i++) {
-        const star = document.createElement('div');
-        star.className = 'bg-star';
-        const size = Math.random() * 2 + 'px';
-        star.style.width = size; star.style.height = size;
-        star.style.left = Math.random() * 100 + 'vw';
-        star.style.top = Math.random() * 100 + 'vh';
-        star.style.setProperty('--d', Math.random() * 3 + 2 + 's');
-        document.getElementById('universo').appendChild(star);
+        const s = document.createElement('div');
+        s.className = 'bg-star';
+        s.style.width = s.style.height = Math.random() * 2 + 'px';
+        s.style.left = Math.random() * 100 + 'vw';
+        s.style.top = Math.random() * 100 + 'vh';
+        s.style.setProperty('--d', Math.random() * 3 + 2 + 's');
+        univ.appendChild(s);
     }
+    // Criar Cadentes
+    setInterval(() => {
+        const c = document.createElement('div');
+        c.className = 'cadente';
+        c.style.left = Math.random() * 100 + 'vw';
+        c.style.top = Math.random() * 50 + 'vh';
+        univ.appendChild(c);
+        setTimeout(() => c.remove(), 4000);
+    }, 2000);
 
     const move = (e) => {
         const x = e.clientX || (e.touches ? e.touches[0].clientX : 0);
@@ -133,10 +170,7 @@
 
     window.addEventListener('mousemove', move);
     window.addEventListener('touchstart', move);
-    window.addEventListener('touchmove', (e) => { 
-        if(e.cancelable) e.preventDefault(); 
-        move(e); 
-    }, { passive: false });
+    window.addEventListener('touchmove', (e) => { if(e.cancelable) e.preventDefault(); move(e); }, { passive: false });
 
     onValue(otherRef, (snapshot) => {
         otherPos = snapshot.val() || { x: -500, y: -500 };
@@ -152,24 +186,21 @@
         const dica = document.getElementById('dica-dinamica');
 
         if (otherPos.x < 0) {
-            dica.innerText = "Esperando o brilho dele(a)...";
-        } else if (dist > 250) {
-            dica.innerText = "Me procure pelo céu...";
-            dica.style.color = "white";
-        } else if (dist <= 250 && dist > 100) {
-            dica.innerText = "Sinto você chegando perto...";
-            dica.style.color = "#ffccd5";
-        } else if (dist <= 100) {
-            dica.innerText = "Fique aqui comigo...";
-            dica.style.color = "var(--cor-p2)";
+            dica.innerText = "Aguardando outra luz...";
+        } else if (dist > 200) {
+            dica.innerText = "Me procure no escuro...";
+        } else if (dist <= 200 && dist > 80) {
+            dica.innerText = "Sinto você perto...";
+        } else {
+            dica.innerText = "Fique comigo.";
         }
 
-        if (dist < 100) { 
-            sincronia += 0.8; 
+        if (dist < 80 && otherPos.x > 0) { 
+            sincronia += 0.7; 
             document.getElementById('eu').classList.add('perto');
             document.getElementById('parceiro').classList.add('perto');
         } else {
-            sincronia -= 0.4;
+            sincronia -= 0.3;
             document.getElementById('eu').classList.remove('perto');
             document.getElementById('parceiro').classList.remove('perto');
         }
@@ -180,7 +211,7 @@
         if (sincronia >= 100) {
             texto.style.opacity = '1';
             dica.style.opacity = '0';
-        } else if (sincronia < 15) {
+        } else {
             texto.style.opacity = '0';
             dica.style.opacity = '0.8';
         }
