@@ -6,93 +6,60 @@
     <title>Nossa Conexão</title>
     <style>
         :root { --cor-p1: #ffffff; --cor-p2: #ff4d6d; }
-        
         html, body { 
             margin: 0; padding: 0; overflow: hidden; position: fixed; 
             width: 100%; height: 100%; touch-action: none;
             background: radial-gradient(circle at center, #1b2735 0%, #090a0f 100%);
             font-family: 'optima', 'Georgia', serif; color: white;
         }
-
         #universo { width: 100vw; height: 100vh; position: relative; overflow: hidden; }
 
-        /* Estrelas de Fundo */
+        /* Estrelas de Fundo e Cadentes */
         .bg-star { position: absolute; background: white; border-radius: 50%; opacity: 0.3; animation: twinkle var(--d) infinite; }
         @keyframes twinkle { 0%, 100% { opacity: 0.3; } 50% { opacity: 0.8; } }
-
-        /* Estrelas Cadentes */
         .cadente {
             position: absolute; width: 2px; height: 2px; background: white;
-            box-shadow: 0 0 10px white, 0 0 20px white;
-            border-radius: 50%; opacity: 0;
-            animation: meteor 4s linear infinite;
+            box-shadow: 0 0 10px white; border-radius: 50%; animation: meteor 4s linear;
         }
-        .cadente::after {
-            content: ''; position: absolute; top: 50%; transform: translateY(-50%);
-            width: 80px; height: 1px; background: linear-gradient(90deg, white, transparent);
-        }
-        @keyframes meteor {
-            0% { transform: rotate(-35deg) translateX(0); opacity: 0; }
-            10% { opacity: 1; }
-            30% { transform: rotate(-35deg) translateX(-1000px); opacity: 0; }
-            100% { opacity: 0; }
-        }
+        @keyframes meteor { 0% { transform: rotate(-35deg) translateX(0); opacity: 0; } 10% { opacity: 1; } 30% { transform: rotate(-35deg) translateX(-1000px); opacity: 0; } }
 
-        /* As Estrelas (Jogadores) */
+        /* Jogadores */
         .estrela { 
             position: absolute; width: 22px; height: 22px; border-radius: 50%; 
-            pointer-events: none; 
-            transform: translate(-50%, -350%); /* Bem acima do dedo */
-            z-index: 999; transition: box-shadow 0.3s ease;
+            pointer-events: none; transform: translate(-50%, -350%); z-index: 999; 
         }
-        #eu { background: var(--cor-p1); box-shadow: 0 0 20px #fff, 0 0 40px #fff; }
-        #parceiro { background: var(--cor-p2); box-shadow: 0 0 20px var(--cor-p2), 0 0 40px var(--cor-p2); }
+        #eu { background: var(--cor-p1); box-shadow: 0 0 20px #fff; }
+        #parceiro { background: var(--cor-p2); box-shadow: 0 0 20px var(--cor-p2); }
 
+        /* Linha de Conexão */
+        #conexao-svg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 998; }
+        #linha { stroke: white; stroke-width: 2; stroke-dasharray: 5; opacity: 0; transition: opacity 0.5s; }
+
+        /* Interface e Texto */
         #texto-container { 
             position: absolute; top: 45%; left: 50%; transform: translate(-50%, -50%);
-            width: 85%; max-width: 650px; text-align: center; 
-            opacity: 0; transition: opacity 2.5s ease-in-out; pointer-events: none;
+            width: 85%; max-width: 650px; text-align: center; opacity: 0; transition: 2s; pointer-events: none;
         }
-        .narrativa { font-size: 1.3rem; line-height: 1.6; text-shadow: 0 0 20px rgba(255,255,255,0.6); font-style: italic; }
+        .narrativa { font-size: 1.3rem; line-height: 1.6; font-style: italic; }
 
-        /* BARRA COM DESTAQUE */
         #barra-sincronia { 
-            position: fixed; bottom: 0; left: 0; 
-            width: 100%; height: 20px; /* Mais grossa */
-            background: rgba(0,0,0,0.4); 
-            border-top: 1px solid rgba(255,255,255,0.1);
-            overflow: hidden; z-index: 1000;
+            position: fixed; bottom: 0; left: 0; width: 100%; height: 20px; 
+            background: rgba(0,0,0,0.5); overflow: hidden; z-index: 1000;
         }
         #progresso { 
-            width: 0%; height: 100%; 
-            background: linear-gradient(90deg, var(--cor-p1), var(--cor-p2), var(--cor-p1)); 
-            background-size: 200% 100%;
-            box-shadow: 0 0 30px var(--cor-p2); /* Brilho forte */
-            transition: width 0.3s ease-out;
-            animation: moveGradient 3s linear infinite;
+            width: 0%; height: 100%; background: linear-gradient(90deg, var(--cor-p1), var(--cor-p2)); 
+            box-shadow: 0 0 30px var(--cor-p2); transition: width 0.3s;
         }
-        @keyframes moveGradient { 0% { background-position: 0% 0%; } 100% { background-position: 200% 0%; } }
         
-        .interface { position: fixed; top: 40px; width: 100%; text-align: center; pointer-events: none; z-index: 20; }
-        .instrucao { font-size: 0.65rem; color: rgba(255,255,255,0.3); letter-spacing: 4px; text-transform: uppercase; }
-        #dica-dinamica { font-size: 0.9rem; margin-top: 10px; color: #fff; font-style: italic; opacity: 0.8; transition: 0.5s; }
-
-        .perto { animation: pulse 1s infinite; }
-        @keyframes pulse {
-            0% { transform: translate(-50%, -350%) scale(1); }
-            50% { transform: translate(-50%, -350%) scale(2); box-shadow: 0 0 70px var(--cor-p2); }
-            100% { transform: translate(-50%, -350%) scale(1); }
-        }
+        .interface { position: fixed; top: 40px; width: 100%; text-align: center; z-index: 20; }
+        #dica-dinamica { font-size: 0.9rem; font-style: italic; opacity: 0.8; }
     </style>
 </head>
 <body>
 
 <div id="universo">
-    <div class="interface">
-        <div class="instrucao">Conexão Estelar</div>
-        <div id="dica-dinamica">Toque para brilhar...</div>
-    </div>
-    
+    <svg id="conexao-svg"><line id="linha" x1="0" y1="0" x2="0" y2="0" /></svg>
+    <div class="interface"><div id="dica-dinamica">Sinta o rastro dele(a)...</div></div>
     <div id="texto-container">
         <p class="narrativa">
             "Excepcional é pouco para te descrever.<br><br>
@@ -101,7 +68,6 @@
             Larissa, você é rara!
         </p>
     </div>
-    
     <div id="eu" class="estrela"></div>
     <div id="parceiro" class="estrela"></div>
     <div id="barra-sincronia"><div id="progresso"></div></div>
@@ -124,23 +90,21 @@
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
 
-    // LÓGICA DE JOGADOR AUTOMÁTICA
     const urlParams = new URLSearchParams(window.location.search);
-    let p = urlParams.get('p'); 
-    
-    // Se não tiver 'p' na URL, ele tenta ser o p1. Se o p1 estiver ocupado (recentemente ativo), vira p2.
-    if (!p) p = '1'; 
+    const p = urlParams.get('p') || '1'; 
     const outroP = p === '1' ? '2' : '1';
 
     const myRef = ref(db, `conecta/p${p}`);
     const otherRef = ref(db, `conecta/p${outroP}`);
 
-    let myPos = { x: -500, y: -500 };
-    let otherPos = { x: -500, y: -500 };
+    let myPos = { x: -1000, y: -1000 };
+    let otherPos = { x: -1000, y: -1000 };
     let sincronia = 0;
 
-    // Criar Fundo
-    const univ = document.getElementById('universo');
+    // Se ela for P2, a estrela P1 (você) fica invisível para ela
+    if (p === '2') document.getElementById('parceiro').style.display = 'none';
+
+    // Gerar estrelas
     for (let i = 0; i < 60; i++) {
         const s = document.createElement('div');
         s.className = 'bg-star';
@@ -148,17 +112,8 @@
         s.style.left = Math.random() * 100 + 'vw';
         s.style.top = Math.random() * 100 + 'vh';
         s.style.setProperty('--d', Math.random() * 3 + 2 + 's');
-        univ.appendChild(s);
+        document.getElementById('universo').appendChild(s);
     }
-    // Criar Cadentes
-    setInterval(() => {
-        const c = document.createElement('div');
-        c.className = 'cadente';
-        c.style.left = Math.random() * 100 + 'vw';
-        c.style.top = Math.random() * 50 + 'vh';
-        univ.appendChild(c);
-        setTimeout(() => c.remove(), 4000);
-    }, 2000);
 
     const move = (e) => {
         const x = e.clientX || (e.touches ? e.touches[0].clientX : 0);
@@ -174,47 +129,41 @@
     window.addEventListener('touchmove', (e) => { if(e.cancelable) e.preventDefault(); move(e); }, { passive: false });
 
     onValue(otherRef, (snapshot) => {
-        otherPos = snapshot.val() || { x: -500, y: -500 };
-        document.getElementById('parceiro').style.left = otherPos.x + 'px';
-        document.getElementById('parceiro').style.top = otherPos.y + 'px';
+        otherPos = snapshot.val() || { x: -1000, y: -1000 };
+        const pVis = document.getElementById('parceiro');
+        pVis.style.left = otherPos.x + 'px';
+        pVis.style.top = otherPos.y + 'px';
         verificarSincronia();
     });
 
     function verificarSincronia() {
+        // Compensação visual para o cálculo de distância (já que a estrela está deslocada para cima)
         const dist = Math.sqrt(Math.pow(myPos.x - otherPos.x, 2) + Math.pow(myPos.y - otherPos.y, 2));
         const barra = document.getElementById('progresso');
-        const texto = document.getElementById('texto-container');
         const dica = document.getElementById('dica-dinamica');
+        const linha = document.getElementById('linha');
 
-        if (otherPos.x < 0) {
-            dica.innerText = "Aguardando outra luz...";
-        } else if (dist > 200) {
-            dica.innerText = "Me procure no escuro...";
-        } else if (dist <= 200 && dist > 80) {
-            dica.innerText = "Sinto você perto...";
+        if (dist < 150) { 
+            sincronia += 0.8;
+            linha.style.opacity = (150 - dist) / 100;
+            linha.setAttribute('x1', myPos.x); linha.setAttribute('y1', myPos.y - 70);
+            linha.setAttribute('x2', otherPos.x); linha.setAttribute('y2', otherPos.y - 70);
+            if (p === '2') dica.innerText = "Você está sentindo algo...";
         } else {
-            dica.innerText = "Fique comigo.";
-        }
-
-        if (dist < 80 && otherPos.x > 0) { 
-            sincronia += 0.7; 
-            document.getElementById('eu').classList.add('perto');
-            document.getElementById('parceiro').classList.add('perto');
-        } else {
-            sincronia -= 0.3;
-            document.getElementById('eu').classList.remove('perto');
-            document.getElementById('parceiro').classList.remove('perto');
+            sincronia -= 0.4;
+            linha.style.opacity = 0;
+            if (p === '2') dica.innerText = "Ele está por aqui... procure.";
         }
 
         sincronia = Math.max(0, Math.min(100, sincronia));
         barra.style.width = sincronia + '%';
         
         if (sincronia >= 100) {
-            texto.style.opacity = '1';
+            document.getElementById('texto-container').style.opacity = '1';
             dica.style.opacity = '0';
-        } else {
-            texto.style.opacity = '0';
-            dica.style.opacity = '0.8';
+            // Revela a estrela no final para o encontro
+            document.getElementById('parceiro').style.display = 'block';
+            document.getElementById('parceiro').style.opacity = '1';
         }
     }
 </script>
