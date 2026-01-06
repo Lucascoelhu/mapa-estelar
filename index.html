@@ -11,11 +11,13 @@
             margin: 0; padding: 0; overflow: hidden; position: fixed; 
             width: 100%; height: 100%; touch-action: none;
             background: radial-gradient(circle at center, #1b2735 0%, #090a0f 100%);
-            font-family: 'Segoe UI', sans-serif; color: white;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; 
+            color: white;
         }
 
         #universo { width: 100vw; height: 100vh; position: relative; overflow: hidden; }
 
+        /* Estrelas de Fundo */
         .bg-star { position: absolute; background: white; border-radius: 50%; opacity: 0.3; animation: twinkle var(--d) infinite; }
         @keyframes twinkle { 0%, 100% { opacity: 0.3; } 50% { opacity: 0.8; } }
         
@@ -25,33 +27,56 @@
         }
         @keyframes meteor { 0% { transform: rotate(-35deg) translateX(0); opacity: 0; } 10% { opacity: 1; } 30% { transform: rotate(-35deg) translateX(-1000px); opacity: 0; } }
 
+        /* Jogadores */
         .estrela { 
             position: absolute; width: 24px; height: 24px; border-radius: 50%; 
             pointer-events: none; transform: translate(-50%, -350%); z-index: 999; 
-            transition: transform 0.1s ease;
         }
         #eu { background: var(--cor-p1); box-shadow: 0 0 25px #fff; }
         #parceiro { background: var(--cor-p2); box-shadow: 0 0 25px var(--cor-p2); }
 
+        /* Linha e Conexão */
         #conexao-svg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 998; }
         #linha { stroke: white; stroke-width: 1.2; stroke-dasharray: 5; opacity: 0; transition: opacity 0.3s; }
 
+        /* TEXTO PERSONALIZADO - CARTA DOS CÉUS */
         #texto-container { 
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            width: 85%; max-width: 550px; text-align: center; 
-            opacity: 0; transition: opacity 0.8s ease-out; pointer-events: none;
-            padding: 40px 20px;
-            background: radial-gradient(circle, rgba(255, 255, 255, 0.05) 0%, transparent 80%);
+            width: 88%; max-width: 600px; text-align: center; 
+            opacity: 0; transition: opacity 1s ease-in-out; pointer-events: none;
+            padding: 30px;
+            background: radial-gradient(circle, rgba(0,0,0,0.4) 0%, transparent 90%);
+            border-radius: 40px;
+            max-height: 80vh;
+            overflow-y: auto;
         }
-        .narrativa { font-size: 1.25rem; line-height: 1.8; font-weight: 300; text-shadow: 0 2px 15px rgba(0,0,0,0.9); }
-        .destaque-nome { display: block; margin-top: 25px; font-size: 1.4rem; color: var(--cor-p2); font-weight: 400; }
+        .narrativa { 
+            font-size: 1.1rem; 
+            line-height: 1.6; 
+            font-weight: 300; 
+            text-shadow: 0 2px 10px rgba(0,0,0,1);
+            color: #f8f8f8;
+        }
+        .destaque-nome { 
+            display: block; 
+            margin: 15px 0;
+            font-size: 1.3rem; 
+            color: var(--cor-p2); 
+            font-weight: 400; 
+            letter-spacing: 1px;
+        }
+        .final {
+            display: block;
+            margin-top: 15px;
+            font-weight: 400;
+            font-style: italic;
+            color: #fff;
+            text-shadow: 0 0 10px var(--cor-p2);
+        }
 
-        #barra-sincronia { 
-            position: fixed; bottom: 0; left: 0; width: 100%; height: 6px; 
-            background: rgba(255,255,255,0.05); z-index: 1000;
-        }
-        #progresso { width: 0%; height: 100%; background: linear-gradient(90deg, var(--cor-p1), var(--cor-p2)); box-shadow: 0 0 15px var(--cor-p2); }
-        
+        /* Interface */
+        #barra-sincronia { position: fixed; bottom: 0; left: 0; width: 100%; height: 6px; background: rgba(255,255,255,0.05); z-index: 1000; }
+        #progresso { width: 0%; height: 100%; background: linear-gradient(90deg, var(--cor-p1), var(--cor-p2)); box-shadow: 0 0 15px var(--cor-p2); transition: width 0.3s; }
         .interface { position: fixed; top: 40px; width: 100%; text-align: center; z-index: 20; }
         #dica-dinamica { font-size: 0.7rem; opacity: 0.4; letter-spacing: 4px; text-transform: uppercase; }
     </style>
@@ -64,10 +89,18 @@
     
     <div id="texto-container">
         <p class="narrativa">
-            "Excepcional é pouco para te descrever.<br><br>
-            Você não habita apenas minha mente, você percorre todo o meu corpo como uma sensação doce e familiar.<br><br>
-            Ver o brilho dos seus olhos alegra não só o meu olhar, mas ilumina a minha alma por completo."
+            "Excepcional é pouco para te descrever. Você não habita apenas minha mente; você percorre todo o meu corpo como uma sensação doce. Ver o brilho dos seus olhos alegra não só o meu olhar, mas ilumina a minha alma por completo.
+            
             <span class="destaque-nome">Larissa, você é rara! Não se esqueça disso.</span>
+            
+            Aos meus olhos, você é a estrela que faltava brilhar no meu céu; é a luz que faltava para as noites frias. Você, por si só, é incrível. Eu poderia falar, de ponta a ponta, das qualidades que você tem e da beleza que carrega.
+            
+            <br><br>
+            Minha missão nesse espaço estrelado é fazer você enxergar isso através de mim. Quero te mostrar o quanto você é mais do que imagina — e que consegue ser ainda mais do que pode sonhar. 
+            
+            <span class="destaque-nome">VOCÊ É RARÍSSIMA!</span>
+            
+            <span class="final">Assim como me encontrou nesse espaço estrelado com pequenos gestos nessa tela, encontrou também o seu lugar em meu coração."</span>
         </p>
     </div>
 
@@ -105,7 +138,6 @@
     let sincronia = 0;
     let audioContext, oscillator, gainNode;
 
-    // Inicia som no primeiro clique
     function initAudio() {
         if (audioContext) return;
         audioContext = new (window.AudioContext || window.webkitAudioContext)();
@@ -163,27 +195,23 @@
             linha.style.opacity = (150 - dist) / 100;
             linha.setAttribute('x1', myPos.x); linha.setAttribute('y1', myPos.y - 80);
             linha.setAttribute('x2', otherPos.x); linha.setAttribute('y2', otherPos.y - 80);
-            
-            // Som e vibração
             if (gainNode) gainNode.gain.setTargetAtTime(0.1, audioContext.currentTime, 0.1);
             if (dist < 40 && navigator.vibrate) navigator.vibrate(20);
-            
-            if (p === '2') dica.innerText = "A conexão está aumentando...";
         } else {
             sincronia -= 0.6;
             linha.style.opacity = 0;
             if (gainNode) gainNode.gain.setTargetAtTime(0, audioContext.currentTime, 0.1);
-            if (p === '2') dica.innerText = "Procure o brilho dele...";
         }
 
         sincronia = Math.max(0, Math.min(100, sincronia));
         barra.style.width = sincronia + '%';
         
-        // Sumiço e aparecimento gradual
-        texto.style.opacity = sincronia > 20 ? (sincronia - 20) / 80 : 0;
+        // Efeito Realista: O texto some se eles se afastarem
+        texto.style.opacity = sincronia > 15 ? (sincronia - 15) / 85 : 0;
 
         if (p === '2') {
-            document.getElementById('parceiro').style.opacity = sincronia > 85 ? '1' : '0';
+            document.getElementById('parceiro').style.opacity = sincronia > 90 ? '1' : '0';
+            dica.innerText = sincronia > 10 ? "A conexão está aumentando..." : "Ele está em algum lugar...";
         }
     }
 </script>
