@@ -2,48 +2,62 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Nossa Conexão</title>
     <style>
         :root { --cor-p1: #ffffff; --cor-p2: #ff4d6d; }
-        body { margin: 0; overflow: hidden; background: radial-gradient(circle at center, #1b2735 0%, #090a0f 100%); font-family: 'optima', 'Georgia', serif; color: white; }
         
+        /* Previne o scroll e o "puxar para atualizar" no mobile */
+        html, body { 
+            margin: 0; padding: 0; overflow: hidden; position: fixed; 
+            width: 100%; height: 100%; touch-action: none;
+            background: radial-gradient(circle at center, #1b2735 0%, #090a0f 100%);
+            font-family: 'optima', 'Georgia', serif; color: white;
+        }
+
         #universo { width: 100vw; height: 100vh; position: relative; }
 
         .bg-star { position: absolute; background: white; border-radius: 50%; opacity: 0.3; animation: twinkle var(--d) infinite; }
         @keyframes twinkle { 0%, 100% { opacity: 0.3; } 50% { opacity: 0.8; } }
 
         .estrela { 
-            position: absolute; width: 14px; height: 14px; border-radius: 50%; 
-            pointer-events: none; transform: translate(-50%, -50%);
+            position: absolute; width: 18px; height: 18px; border-radius: 50%; 
+            pointer-events: none; transform: translate(-50%, -150%); /* Ajustado para aparecer acima do dedo no mobile */
             z-index: 10; transition: box-shadow 0.3s ease;
         }
         #eu { background: var(--cor-p1); box-shadow: 0 0 20px #fff, 0 0 40px #fff; }
         #parceiro { background: var(--cor-p2); box-shadow: 0 0 20px var(--cor-p2), 0 0 40px var(--cor-p2); }
 
         #texto-container { 
-            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            position: absolute; top: 45%; left: 50%; transform: translate(-50%, -50%);
             width: 85%; max-width: 650px; text-align: center; 
             opacity: 0; transition: opacity 2.5s ease-in-out; pointer-events: none;
         }
-        .narrativa { font-size: 1.6rem; line-height: 1.8; text-shadow: 0 0 20px rgba(255,255,255,0.6); font-style: italic; }
+        .narrativa { font-size: 1.4rem; line-height: 1.6; text-shadow: 0 0 20px rgba(255,255,255,0.6); font-style: italic; }
 
+        /* BARRA DE SINCRONIA OTIMIZADA */
         #barra-sincronia { 
-            position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%); 
-            width: 200px; height: 2px; background: rgba(255,255,255,0.05); border-radius: 10px; overflow: hidden;
+            position: fixed; bottom: 0; left: 0; 
+            width: 100%; height: 12px; /* Aumentada para maior visibilidade */
+            background: rgba(255,255,255,0.05); overflow: hidden;
+            box-shadow: 0 -5px 15px rgba(0,0,0,0.5);
         }
-        #progresso { width: 0%; height: 100%; background: linear-gradient(90deg, transparent, var(--cor-p2)); transition: width 0.3s; }
+        #progresso { 
+            width: 0%; height: 100%; 
+            background: linear-gradient(90deg, var(--cor-p1), var(--cor-p2)); 
+            box-shadow: 0 0 15px var(--cor-p2);
+            transition: width 0.3s ease-out; 
+        }
         
-        /* GUIAS E DICAS */
-        .interface { position: fixed; top: 40px; width: 100%; text-align: center; pointer-events: none; }
-        .instrucao { font-size: 0.7rem; color: rgba(255,255,255,0.3); letter-spacing: 4px; text-transform: uppercase; margin-bottom: 10px; }
-        #dica-dinamica { font-size: 1rem; color: var(--cor-p2); font-style: italic; text-shadow: 0 0 10px var(--cor-p2); opacity: 0.8; transition: 0.5s; }
+        .interface { position: fixed; top: 40px; width: 100%; text-align: center; pointer-events: none; z-index: 20; }
+        .instrucao { font-size: 0.65rem; color: rgba(255,255,255,0.3); letter-spacing: 4px; text-transform: uppercase; margin-bottom: 8px; }
+        #dica-dinamica { font-size: 0.9rem; color: #fff; font-style: italic; opacity: 0.8; transition: 0.5s; padding: 0 20px; }
 
-        .perto { animation: pulse 1.5s infinite; }
+        .perto { animation: pulse 1s infinite; }
         @keyframes pulse {
-            0% { transform: translate(-50%, -50%) scale(1); }
-            50% { transform: translate(-50%, -50%) scale(1.6); box-shadow: 0 0 50px var(--cor-p2); }
-            100% { transform: translate(-50%, -50%) scale(1); }
+            0% { transform: translate(-50%, -150%) scale(1); }
+            50% { transform: translate(-50%, -150%) scale(1.8); box-shadow: 0 0 60px var(--cor-p2); }
+            100% { transform: translate(-50%, -150%) scale(1); }
         }
     </style>
 </head>
@@ -52,7 +66,7 @@
 <div id="universo">
     <div class="interface">
         <div class="instrucao">Conexão Estelar</div>
-        <div id="dica-dinamica">Mova sua luz e procure pela minha...</div>
+        <div id="dica-dinamica">Toque na tela para começar...</div>
     </div>
     
     <div id="texto-container">
@@ -90,12 +104,12 @@
     const myRef = ref(db, `conecta/p${p}`);
     const otherRef = ref(db, `conecta/p${outroP}`);
 
-    let myPos = { x: -200, y: -200 };
-    let otherPos = { x: -200, y: -200 };
+    let myPos = { x: -500, y: -500 };
+    let otherPos = { x: -500, y: -500 };
     let sincronia = 0;
 
-    // Gerar estrelas de fundo
-    for (let i = 0; i < 80; i++) {
+    // Estrelas de fundo
+    for (let i = 0; i < 60; i++) {
         const star = document.createElement('div');
         star.className = 'bg-star';
         const size = Math.random() * 2 + 'px';
@@ -117,10 +131,13 @@
 
     window.addEventListener('mousemove', move);
     window.addEventListener('touchstart', move);
-    window.addEventListener('touchmove', (e) => { e.preventDefault(); move(e); }, { passive: false });
+    window.addEventListener('touchmove', (e) => { 
+        if(e.cancelable) e.preventDefault(); 
+        move(e); 
+    }, { passive: false });
 
     onValue(otherRef, (snapshot) => {
-        otherPos = snapshot.val() || { x: -200, y: -200 };
+        otherPos = snapshot.val() || { x: -500, y: -500 };
         document.getElementById('parceiro').style.left = otherPos.x + 'px';
         document.getElementById('parceiro').style.top = otherPos.y + 'px';
         verificarSincronia();
@@ -132,38 +149,36 @@
         const texto = document.getElementById('texto-container');
         const dica = document.getElementById('dica-dinamica');
 
-        // Lógica de Dicas Dinâmicas
         if (otherPos.x < 0) {
-            dica.innerText = "Aguardando seu amor entrar...";
-        } else if (dist > 300) {
-            dica.innerText = "Estou por aqui... me encontre.";
+            dica.innerText = "Esperando o brilho dele(a)...";
+        } else if (dist > 250) {
+            dica.innerText = "Me procure pelo céu...";
             dica.style.color = "white";
-        } else if (dist <= 300 && dist > 100) {
-            dica.innerText = "Consigo sentir seu brilho... chegue mais perto.";
+        } else if (dist <= 250 && dist > 80) {
+            dica.innerText = "Sinto você chegando perto...";
             dica.style.color = "#ffccd5";
-        } else if (dist <= 100) {
-            dica.innerText = "Não solte agora! Fique comigo...";
+        } else if (dist <= 80) {
+            dica.innerText = "Não solte agora...";
             dica.style.color = "var(--cor-p2)";
         }
 
         if (dist < 80) { 
-            sincronia += 0.8; 
+            sincronia += 1.0; // Ganha progresso mais rápido no toque
             document.getElementById('eu').classList.add('perto');
             document.getElementById('parceiro').classList.add('perto');
         } else {
-            sincronia -= 0.3;
+            sincronia -= 0.4;
             document.getElementById('eu').classList.remove('perto');
             document.getElementById('parceiro').classList.remove('perto');
         }
 
-        if (sincronia > 100) sincronia = 100;
-        if (sincronia < 0) sincronia = 0;
+        sincronia = Math.max(0, Math.min(100, sincronia));
         barra.style.width = sincronia + '%';
         
         if (sincronia >= 100) {
             texto.style.opacity = '1';
-            dica.style.opacity = '0'; // Esconde a dica quando o texto aparece
-        } else if (sincronia < 10) {
+            dica.style.opacity = '0';
+        } else if (sincronia < 15) {
             texto.style.opacity = '0';
             dica.style.opacity = '0.8';
         }
